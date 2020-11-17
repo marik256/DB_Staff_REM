@@ -16,7 +16,7 @@ namespace DB_Staff_REM
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DBViewer());
+            Application.Run(new DBView());
         }
     }
 }

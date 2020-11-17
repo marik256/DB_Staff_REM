@@ -61,11 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBViewer.cs">
+    <Compile Include="DBModel.cs" />
+    <Compile Include="DBView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DBViewer.Designer.cs">
-      <DependentUpon>DBViewer.cs</DependentUpon>
+    <Compile Include="DBView.Designer.cs">
+      <DependentUpon>DBView.cs</DependentUpon>
     </Compile>
     <Compile Include="EmployeeData.cs">
       <SubType>Form</SubType>
@@ -75,8 +76,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="DBViewer.resx">
-      <DependentUpon>DBViewer.cs</DependentUpon>
+    <EmbeddedResource Include="DBView.resx">
+      <DependentUpon>DBView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EmployeeData.resx">
       <DependentUpon>EmployeeData.cs</DependentUpon>
