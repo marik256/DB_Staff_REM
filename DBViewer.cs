@@ -7,7 +7,7 @@ namespace DB_Staff_REM
 {
     public partial class DBViewer : Form
     {
-        private readonly DataSet dataSet = new DataSet("Employees");
+        private readonly DataTable dataTable = new DataTable();
         private readonly string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
                                                      AttachDbFilename=C:\Users\maryn\source\repos\DB_Staff_REM\StaffREM.mdf;
                                                      Integrated Security=True";
@@ -22,23 +22,29 @@ namespace DB_Staff_REM
                                                  VALUES (@Surname, @FirstName, @Patronimic, @IdPosition, @Address)";
 
         private readonly string deleteString = @"DELETE Staff
-                                                 WHERE Id = ";
+                                                 WHERE Id = @Id";
 
         private readonly string updateString = @"UPDATE Staff
                                                  SET Surname = @Surname, FirstName = @FirstName, Patronimic = @Patronimic,
                                                  IdPosition = @IdPosition, Address = @Address
-                                                 WHERE Id = ";
+                                                 WHERE Id = @Id";
+
+        private SqlCommand currentSelectCommand;
 
         public DBViewer()
         {
             InitializeComponent();
         }
 
-        private void ReloadDataGridView(SqlDataAdapter adapter)
+        private void ReloadDataGridView(SqlConnection connection)
         {
-            dataSet.Tables["Employees"]?.Clear();
-            adapter.Fill(dataSet, "Employees");
-            dataGridView.DataSource = dataSet.Tables["Employees"];
+            currentSelectCommand.Connection = connection;
+            dataTable.Clear();
+            using (var dataReader = currentSelectCommand.ExecuteReader())
+            {
+                dataTable.Load(dataReader);
+            }
+            dataGridView.DataSource = dataTable;
         }
 
         private void SetHeaders()
@@ -55,14 +61,10 @@ namespace DB_Staff_REM
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(selectString, connection)
-                {
-                    SelectCommand = new SqlCommand(selectString, connection)
-                };
-                adapter.SelectCommand.Connection.Open();
-                adapter.SelectCommand.ExecuteNonQuery();
-
-                ReloadDataGridView(adapter);
+                connection.Open();
+                currentSelectCommand = connection.CreateCommand();
+                currentSelectCommand.CommandText = selectString;
+                ReloadDataGridView(connection);
             }
             SetHeaders();
         }
@@ -75,19 +77,18 @@ namespace DB_Staff_REM
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        SqlDataAdapter adapter = new SqlDataAdapter(selectString, connection);
+                        connection.Open();
+                        currentSelectCommand = connection.CreateCommand();
                         if (radioButton == allRadioButton)
                         {
-                            adapter.SelectCommand = new SqlCommand(selectString, connection);
+                            currentSelectCommand.CommandText = selectString;
                         }
                         else
                         {
-                            adapter.SelectCommand = new SqlCommand(selectString, connection);
-                            adapter.SelectCommand.CommandText += $"WHERE p.Id = {radioButton.TabIndex}";
+                            currentSelectCommand.CommandText = selectString + $"WHERE p.Id = @Id";
+                            currentSelectCommand.Parameters.AddWithValue("@Id", radioButton.TabIndex);
                         }
-                        adapter.SelectCommand.Connection.Open();
-                        adapter.SelectCommand.ExecuteNonQuery();
-                        ReloadDataGridView(adapter);
+                        ReloadDataGridView(connection);
                     }
                 }
             }
@@ -97,19 +98,16 @@ namespace DB_Staff_REM
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(selectString, connection)
-                {
-                    InsertCommand = new SqlCommand(insertString, connection)
-                };
-                adapter.InsertCommand.Parameters.Add(new SqlParameter("@Surname", EmployeeDataWindow.Surname));
-                adapter.InsertCommand.Parameters.Add(new SqlParameter("@FirstName", EmployeeDataWindow.FirstName));
-                adapter.InsertCommand.Parameters.Add(new SqlParameter("@Patronimic", EmployeeDataWindow.Patronimic));
-                adapter.InsertCommand.Parameters.Add(new SqlParameter("@IdPosition", EmployeeDataWindow.Position));
-                adapter.InsertCommand.Parameters.Add(new SqlParameter("@Address", EmployeeDataWindow.Address));
+                connection.Open();
+                var insertCommand = new SqlCommand(insertString, connection);
+                insertCommand.Parameters.AddWithValue("@Surname", EmployeeDataWindow.Surname);
+                insertCommand.Parameters.AddWithValue("@FirstName", EmployeeDataWindow.FirstName);
+                insertCommand.Parameters.AddWithValue("@Patronimic", EmployeeDataWindow.Patronimic);
+                insertCommand.Parameters.AddWithValue("@IdPosition", EmployeeDataWindow.Position);
+                insertCommand.Parameters.AddWithValue("@Address", EmployeeDataWindow.Address);
 
-                adapter.InsertCommand.Connection.Open();
-                adapter.InsertCommand.ExecuteNonQuery();
-                ReloadDataGridView(adapter);
+                insertCommand.ExecuteNonQuery();
+                ReloadDataGridView(connection);
             }
         }
 
@@ -117,14 +115,14 @@ namespace DB_Staff_REM
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(selectString, connection)
-                {
-                    DeleteCommand = new SqlCommand(deleteString, connection)
-                };
-                adapter.DeleteCommand.CommandText += $"{dataGridView.CurrentRow.Cells[0].Value}";
-                adapter.DeleteCommand.Connection.Open();
-                adapter.DeleteCommand.ExecuteNonQuery();
-                ReloadDataGridView(adapter);
+                connection.Open();
+                var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = deleteString;
+
+                deleteCommand.Parameters.AddWithValue("@Id", dataGridView.CurrentRow.Cells[0].Value);
+                
+                deleteCommand.ExecuteNonQuery();
+                ReloadDataGridView(connection);
             }
         }
 
@@ -132,26 +130,38 @@ namespace DB_Staff_REM
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(selectString, connection)
-                {
-                    UpdateCommand = new SqlCommand(updateString, connection)
-                };
-                adapter.UpdateCommand.Parameters.Add(new SqlParameter("@Surname", EmployeeDataWindow.Surname));
-                adapter.UpdateCommand.Parameters.Add(new SqlParameter("@FirstName", EmployeeDataWindow.FirstName));
-                adapter.UpdateCommand.Parameters.Add(new SqlParameter("@Patronimic", EmployeeDataWindow.Patronimic));
-                adapter.UpdateCommand.Parameters.Add(new SqlParameter("@IdPosition", EmployeeDataWindow.Position));
-                adapter.UpdateCommand.Parameters.Add(new SqlParameter("@Address", EmployeeDataWindow.Address));
-                adapter.UpdateCommand.CommandText += $"{dataGridView.CurrentRow.Cells[0].Value}";
+                connection.Open();
+                var updateCommand = connection.CreateCommand();
+                updateCommand.CommandText = updateString;
 
-                adapter.UpdateCommand.Connection.Open();
-                adapter.UpdateCommand.ExecuteNonQuery();
-                ReloadDataGridView(adapter);
+                updateCommand.Parameters.AddWithValue("@Surname", EmployeeDataWindow.Surname);
+                updateCommand.Parameters.AddWithValue("@FirstName", EmployeeDataWindow.FirstName);
+                updateCommand.Parameters.AddWithValue("@Patronimic", EmployeeDataWindow.Patronimic);
+                updateCommand.Parameters.AddWithValue("@IdPosition", EmployeeDataWindow.Position);
+                updateCommand.Parameters.AddWithValue("@Address", EmployeeDataWindow.Address);
+                updateCommand.Parameters.AddWithValue("@Id", dataGridView.CurrentRow.Cells[0].Value);
+
+                updateCommand.ExecuteNonQuery();
+                ReloadDataGridView(connection);
             }
+        }
+
+        private DialogResult GetYesOrNoDialogResult(string title, string message)
+        {
+            return MessageBox.Show(title, message,
+                                   MessageBoxButtons.YesNo,
+                                   MessageBoxIcon.Question);
         }
 
         public EmployeeData EmployeeDataWindow { get; set; } = null;
 
-        private void CreateEmployeeDataWindow(string operation)
+        enum Operations
+        {
+            Insert,
+            Update
+        }
+
+        private void CreateEmployeeDataWindow(Operations operation)
         {
             if (EmployeeDataWindow == null)
             {
@@ -164,7 +174,7 @@ namespace DB_Staff_REM
 
             void EmployeeDataWindowFormLoad(object sender, EventArgs e)
             {
-                if (operation == "Update")
+                if (operation == Operations.Update)
                 {
                     EmployeeDataWindow.Surname = dataGridView.CurrentRow.Cells[1].Value.ToString();
                     EmployeeDataWindow.FirstName = dataGridView.CurrentRow.Cells[2].Value.ToString();
@@ -184,51 +194,44 @@ namespace DB_Staff_REM
 
             void ButtonConfirmClick(object sender, EventArgs e)
             {
-                DialogResult result;
                 switch (operation)
                 {
-                    case "Insert":
-                        result = MessageBox.Show("Ви впевнені, що хочете додати новий запис?",
-                                                 "Додавання",
-                                                 MessageBoxButtons.YesNo,
-                                                 MessageBoxIcon.Question);
-                        if (result == DialogResult.No)
+                    case Operations.Insert:
+                        if (GetYesOrNoDialogResult("Ви впевнені, що хочете додати новий запис?",
+                                                   "Додавання") 
+                            == DialogResult.No)
                         {
                             return;
                         }
                         InsertRowInStaff();
-                        EmployeeDataWindow.Close();
                         break;
-                    case "Update":
-                        result = MessageBox.Show("Ви впевнені, що хочете редагувати запис?",
-                                                 "Редагування",
-                                                 MessageBoxButtons.YesNo,
-                                                 MessageBoxIcon.Question);
-                        if (result == DialogResult.No)
+                    
+                    case Operations.Update:
+                        if (GetYesOrNoDialogResult("Ви впевнені, що хочете редагувати запис?",
+                                                   "Редагування")
+                            == DialogResult.No)
                         {
                             return;
                         }
                         UpdateRowInStaff();
-                        EmployeeDataWindow.Close();
                         break;
-                    default:
-                        return;
+
+                    default: return;
                 }
+                EmployeeDataWindow.Close();
             }
         }
 
         private void InsertButton_Click(object sender, EventArgs e)
         {
-            CreateEmployeeDataWindow("Insert");
+            CreateEmployeeDataWindow(Operations.Insert);
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Ви впевнені, що хочете видалити запис?",
-                                                  "Видалення",
-                                                  MessageBoxButtons.YesNo,
-                                                  MessageBoxIcon.Question);
-            if (result == DialogResult.No)
+            if (GetYesOrNoDialogResult("Ви впевнені, що хочете видалити запис?",
+                                       "Видалення")
+                == DialogResult.No)
             {
                 return;
             }
@@ -237,7 +240,7 @@ namespace DB_Staff_REM
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
-            CreateEmployeeDataWindow("Update");
+            CreateEmployeeDataWindow(Operations.Update);
         }
     }
 }
