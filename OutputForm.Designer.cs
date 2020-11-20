@@ -1,6 +1,6 @@
 ﻿namespace DB_Staff_REM
 {
-    partial class DBView
+    partial class OutputForm
     {
         /// <summary>
         /// Required designer variable.
@@ -185,7 +185,7 @@
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
-            // DBViewer
+            // OutputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -195,7 +195,7 @@
             this.Controls.Add(this.updateButton);
             this.Controls.Add(this.dataGridView);
             this.Controls.Add(this.groupBox);
-            this.Name = "DBViewer";
+            this.Name = "OutputForm";
             this.Text = "Працівники РЕМ";
             this.Load += new System.EventHandler(this.DBViewer_Load);
             this.groupBox.ResumeLayout(false);

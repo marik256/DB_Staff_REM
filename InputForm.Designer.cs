@@ -1,6 +1,6 @@
 ﻿namespace DB_Staff_REM
 {
-    partial class EmployeeData
+    partial class InputForm
     {
         /// <summary>
         /// Required designer variable.
@@ -80,6 +80,7 @@
             this.confirmButton.TabIndex = 6;
             this.confirmButton.Text = "Підтвердити";
             this.confirmButton.UseVisualStyleBackColor = true;
+            this.confirmButton.Click += new System.EventHandler(this.ConfirmButton_Click);
             // 
             // label2
             // 
@@ -138,7 +139,7 @@
             this.addressTextBox.Size = new System.Drawing.Size(186, 22);
             this.addressTextBox.TabIndex = 4;
             // 
-            // Insert
+            // InputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -156,7 +157,7 @@
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Insert";
+            this.Name = "InputForm";
             this.Text = "Додати працівника";
             this.ResumeLayout(false);
             this.PerformLayout();
