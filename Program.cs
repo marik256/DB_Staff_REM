@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DB_Staff_REM
@@ -14,9 +11,12 @@ namespace DB_Staff_REM
         [STAThread]
         static void Main()
         {
+            const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
+                                              AttachDbFilename=C:\Users\maryn\source\repos\DB_Staff_REM\StaffREM.mdf;
+                                              Integrated Security=True";
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DBViewer());
+            Application.Run(new DBViewer(new EmployeeStorage(connectionString)));
         }
     }
 }

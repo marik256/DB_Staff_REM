@@ -1,6 +1,6 @@
 ﻿namespace DB_Staff_REM
 {
-    partial class EmployeeData
+    partial class EmployeeEdit
     {
         /// <summary>
         /// Required designer variable.
