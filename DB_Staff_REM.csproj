@@ -61,28 +61,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBViewer.cs">
+    <Compile Include="EmployeeEditor\EmployeeEditEventsHandler.cs" />
+    <Compile Include="EmployeeEditor\EmployeeEditorPresenter.cs" />
+    <Compile Include="EmployeeEditor\EmployeeEditorFactory.cs" />
+    <Compile Include="EmployeeRegistry\EmployeeRegistryModel.cs" />
+    <Compile Include="EmployeeRegistry\EmployeeRegistryPresenter.cs" />
+    <Compile Include="EmployeeRegistry\EmployeeRegistryView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DBViewer.Designer.cs">
-      <DependentUpon>DBViewer.cs</DependentUpon>
+    <Compile Include="EmployeeRegistry\EmployeeRegistryView.Designer.cs">
+      <DependentUpon>EmployeeRegistryView.cs</DependentUpon>
     </Compile>
     <Compile Include="Employee.cs" />
-    <Compile Include="EmployeeEdit.cs">
+    <Compile Include="EmployeeEditor\EmployeeEditorView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EmployeeEdit.Designer.cs">
-      <DependentUpon>EmployeeEdit.cs</DependentUpon>
+    <Compile Include="EmployeeEditor\EmployeeEditorView.Designer.cs">
+      <DependentUpon>EmployeeEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="EmployeeOperation.cs" />
     <Compile Include="EmployeeStorage.cs" />
+    <Compile Include="EventHub\IEventHandler.cs" />
+    <Compile Include="EventHub\IEventHub.cs" />
+    <Compile Include="EventHub\InProcessEventHub.cs" />
+    <Compile Include="Messages\NewRowEditCompleted.cs" />
+    <Compile Include="Messages\RowEditCompleted.cs" />
+    <Compile Include="Messages\ShowNewRecordEdit.cs" />
+    <Compile Include="Messages\ShowRecordEdit.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="DBViewer.resx">
-      <DependentUpon>DBViewer.cs</DependentUpon>
+    <EmbeddedResource Include="EmployeeRegistry\EmployeeRegistryView.resx">
+      <DependentUpon>EmployeeRegistryView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EmployeeEdit.resx">
-      <DependentUpon>EmployeeEdit.cs</DependentUpon>
+    <EmbeddedResource Include="EmployeeEditor\EmployeeEditorView.resx">
+      <DependentUpon>EmployeeEditorView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
